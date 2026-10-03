@@ -1,0 +1,4 @@
+generado/
+.terraform/
+*.tfstate
+*.tfstate.*

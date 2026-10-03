@@ -1,0 +1,89 @@
+# =============================================================================
+# CI del proyecto poliglota
+# =============================================================================
+# Valida los tres componentes con las MISMAS versiones que declara el
+# devcontainer. Si cambias una versión en devcontainer.json, cámbiala también
+# aquí y en scripts/verify.sh: las tres fuentes deben coincidir.
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  api-node:
+    name: API (Node)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci || npm install
+      - run: npm test
+
+  datos-python:
+    name: Datos (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: datos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python -m pytest tests/ -v
+      - name: Generar el CSV y comprobar que existe
+        run: |
+          python generar_inventario.py
+          test -f salida/inventario.csv
+
+  infra-terraform:
+    name: Infra (Terraform)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+      - run: terraform fmt -check -recursive
+      - run: terraform init -input=false
+      - run: terraform validate -no-color
+
+  # Comprueba la integración real: Python genera el CSV y Node lo consume
+  integracion:
+    name: Integración Python -> Node
+    needs: [ api-node, datos-python ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generar inventario con Python
+        run: python datos/generar_inventario.py
+      - name: La API debe leerlo y calcular el total
+        run: |
+          cd api
+          PORT=3000 node src/server.js &
+          sleep 2
+          RESP=$(curl -sf http://localhost:3000/inventario)
+          echo "$RESP"
+          echo "$RESP" | grep -q '"items": 5'
+          echo "Integración verificada."

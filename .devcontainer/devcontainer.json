@@ -1,0 +1,39 @@
+{
+  // ===========================================================================
+  // STARTER — Lab 1 del Módulo 6 (INCOMPLETO a propósito)
+  // ===========================================================================
+  // Tal como está, levanta un contenedor base SIN Node, SIN Python y SIN
+  // Terraform: ./scripts/verify.sh fallará. Completa los TODO hasta que pase.
+  //
+  // La solución de referencia está en SOLUCION/.devcontainer/devcontainer.json
+  // Documentación de la especificación: https://containers.dev
+  // ===========================================================================
+  "name": "Proyecto poliglota (starter)",
+
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  // TODO (Fase 2): añade las features que instalan las herramientas.
+  // Necesitas: Node 20, Python 3.11, Terraform 1.9.8 y GitHub CLI.
+  // Formato:
+  //   "features": {
+  //     "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+  //     ...
+  //   }
+
+  // TODO (Fase 2): añade customizations.vscode con las extensiones de los
+  // tres lenguajes (Python, Terraform) y los settings del editor.
+  // Formato:
+  //   "customizations": { "vscode": { "extensions": [...], "settings": {...} } }
+
+  // TODO (Fase 2): reenvía el puerto 3000 donde corre la API.
+  //   "forwardPorts": [3000]
+
+  // TODO (Fase 3): decide en QUÉ hook instalar las dependencias.
+  //   - onCreateCommand       -> SÍ entra en el prebuild (Lab 2)
+  //   - updateContentCommand  -> SÍ entra en el prebuild (Lab 2)
+  //   - postCreateCommand     -> NO entra en el prebuild
+  // Pista: lo que pongas aquí determina cuánto ahorrarás en el Lab 2.
+  //   "postCreateCommand": "..."
+
+  "remoteUser": "vscode"
+}
