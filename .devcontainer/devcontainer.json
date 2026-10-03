@@ -9,31 +9,58 @@
   // Documentación de la especificación: https://containers.dev
   // ===========================================================================
   "name": "Proyecto poliglota (starter)",
-
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
-
   // TODO (Fase 2): añade las features que instalan las herramientas.
   // Necesitas: Node 20, Python 3.11, Terraform 1.9.8 y GitHub CLI.
   // Formato:
-  //   "features": {
-  //     "ghcr.io/devcontainers/features/node:1": { "version": "20" },
-  //     ...
-  //   }
-
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "1.9.8"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
   // TODO (Fase 2): añade customizations.vscode con las extensiones de los
   // tres lenguajes (Python, Terraform) y los settings del editor.
   // Formato:
   //   "customizations": { "vscode": { "extensions": [...], "settings": {...} } }
-
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "hashicorp.terraform",
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
   // TODO (Fase 2): reenvía el puerto 3000 donde corre la API.
   //   "forwardPorts": [3000]
-
+  "forwardPorts": [
+    3000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "API de inventario",
+      "onAutoForward": "notify"
+    }
+  },
   // TODO (Fase 3): decide en QUÉ hook instalar las dependencias.
   //   - onCreateCommand       -> SÍ entra en el prebuild (Lab 2)
   //   - updateContentCommand  -> SÍ entra en el prebuild (Lab 2)
   //   - postCreateCommand     -> NO entra en el prebuild
   // Pista: lo que pongas aquí determina cuánto ahorrarás en el Lab 2.
   //   "postCreateCommand": "..."
-
+  "onCreateCommand": "bash .devcontainer/setup.sh",
   "remoteUser": "vscode"
 }
